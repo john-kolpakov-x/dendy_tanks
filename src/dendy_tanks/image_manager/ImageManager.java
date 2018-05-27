@@ -11,7 +11,7 @@ public class ImageManager {
     allImages = ImageIO.read(getClass().getResourceAsStream("/tanks.jpeg"));
   }
 
-  public BufferedImage tank(Dir dir, Power power, Velocity velocity, boolean state) {
+  public BufferedImage tank(TankColor tankColor, Dir dir, Power power, Velocity velocity, boolean state) {
 
     int x = 0;
     if (state) x += 16;
@@ -23,6 +23,18 @@ public class ImageManager {
 
     y += velocity.ordinal() * (16 * 4);
 
+    switch (tankColor) {
+      case WHITE:
+        x += 16 * 8;
+        break;
+      case GREEN:
+        y += 16 * 8;
+        break;
+      case RED:
+        x += 16 * 8;
+        y += 16 * 8;
+        break;
+    }
 
     return allImages.getSubimage(x, y, 16, 16);
   }
