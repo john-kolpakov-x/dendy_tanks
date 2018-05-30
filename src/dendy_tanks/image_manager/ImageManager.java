@@ -8,7 +8,7 @@ public class ImageManager {
   private final BufferedImage allImages;
 
   public ImageManager() throws Exception {
-    allImages = ImageIO.read(getClass().getResourceAsStream("/tanks.jpeg"));
+    allImages = ImageIO.read(getClass().getResourceAsStream("/tanks.png"));
   }
 
   public BufferedImage tank(TankColor tankColor, Dir dir, Power power, Velocity velocity, boolean state) {
