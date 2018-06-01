@@ -1,29 +1,25 @@
 package dendy_tanks;
 
-import dendy_tanks.image_manager.Dir;
-import dendy_tanks.image_manager.ImageManager;
-import dendy_tanks.image_manager.Power;
-import dendy_tanks.image_manager.TankColor;
-import dendy_tanks.image_manager.Velocity;
+import dendy_tanks.entity.Entity;
+import dendy_tanks.entity.EntityCollection;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GamePanel extends JPanel implements AutoCloseable {
 
-  private final ImageManager imageManager;
+  private final EntityCollection entityCollection;
 
   private final Thread paintThread;
   private final Thread moveThread;
   private final AtomicBoolean threadsRunning = new AtomicBoolean(true);
 
-  public GamePanel(ImageManager imageManager) {
-    this.imageManager = imageManager;
+  public GamePanel(EntityCollection entityCollection) {
+    this.entityCollection = entityCollection;
 
     paintThread = new Thread(() -> {
 
@@ -41,12 +37,11 @@ public class GamePanel extends JPanel implements AutoCloseable {
 
     paintThread.start();
 
-
     moveThread = new Thread(() -> {
       while (threadsRunning.get()) {
         try {
 
-          Thread.sleep(10);
+          Thread.sleep(30);
 
           moveStep();
 
@@ -63,7 +58,19 @@ public class GamePanel extends JPanel implements AutoCloseable {
 
   private void moveStep() {
 
-    x.set(x.get() + 2);
+    //x.set(x.get() + 2);
+
+    for (Entity entity : entityCollection.entityList) {
+      Point v = entity.velocity();
+
+      Point location = entity.location;
+
+      Point newLocation = new Point(location.x + v.x, location.y + v.y);
+
+      entity.location = newLocation;
+
+      entity.changeState();
+    }
 
   }
 
@@ -83,13 +90,11 @@ public class GamePanel extends JPanel implements AutoCloseable {
 
   }
 
-  final AtomicInteger x = new AtomicInteger(100);
-
   private void paintItAll(Graphics2D g) throws Exception {
 
-    BufferedImage tank = imageManager.tank(TankColor.YELLOW, Dir.DOWN, Power.P1, Velocity.FAST, false);
-
-    g.drawImage(tank, x.get(), 100, 32, 32, null);
+    for (Entity entity : entityCollection.entityList) {
+      entity.paint(g);
+    }
 
   }
 
